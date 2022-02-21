@@ -31,7 +31,7 @@ func InitEngine() {
 	movieGroup := engine.Group("/movieDetails")
 	{
 		movieGroup.GET("/selectMovieDetails", selectMovieDetails) //影片详情
-		userGroup.POST("/postShortComment", PostShortComment)     //增加短评
+		movieGroup.POST("/postShortComment", PostShortComment)    //发布短评
 	}
 
 	engine.GET("/selectCelebrityDetails", getCelebrityDetails) //影人详情
