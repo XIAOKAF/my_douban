@@ -292,5 +292,48 @@ func getCelebrityDetails(ctx *gin.Context) {
 }
 
 func PostShortComment(ctx *gin.Context) {
-
+	movieId := ctx.PostForm("movieId")
+	content := ctx.PostForm("comment")
+	token := ctx.GetHeader("token")
+	//token过期
+	claims, err := service.ParseToken(token)
+	flag := tool.CheckToken(ctx, err)
+	if !flag {
+		return
+	}
+	//token类型错误
+	if claims.Variety == "refreshToken" {
+		tool.ReturnFailure(ctx, 200, "token类型错误")
+		return
+	}
+	//token过期
+	flag = tool.CheckToken(ctx, err)
+	if !flag {
+		return
+	}
+	if movieId == "" {
+		tool.ReturnFailure(ctx, 403, "电影id不能为空")
+		return
+	}
+	if content == "" {
+		tool.ReturnFailure(ctx, 403, "欢迎一切有用的评论")
+		return
+	}
+	if len(content) > 50 {
+		tool.ReturnFailure(ctx, 403, "评论内容过多")
+		return
+	}
+	comment := model.Comment{
+		MovieId: movieId,
+		Comment: content,
+		PostId:  claims.Mobile,
+	}
+	//储存
+	err = service.InsertComment(comment)
+	if err != nil {
+		fmt.Println("保存评论失败", err)
+		tool.ReturnFailure(ctx, 500, "保存评论失败")
+		return
+	}
+	tool.ReturnSuccess(ctx, 200, "发布评论成功")
 }

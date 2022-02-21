@@ -64,3 +64,11 @@ func SelectAllActorsByMovieId(movieId string) (error, [6]model.ActorsBasicInfo) 
 	}
 	return nil, arr
 }
+
+func InsertComment(comment model.Comment) error {
+	err := dao.InsertComment(comment)
+	if err != nil {
+		return err
+	}
+	return nil
+}
