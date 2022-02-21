@@ -72,3 +72,11 @@ func InsertComment(comment model.Comment) error {
 	}
 	return nil
 }
+
+func SelectComment(comment model.Comment) (model.Comment, error) {
+	c, err := dao.SelectComment(comment)
+	if err != nil {
+		return c, err
+	}
+	return c, nil
+}

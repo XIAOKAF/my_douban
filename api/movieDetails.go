@@ -311,3 +311,17 @@ func PostShortComment(ctx *gin.Context) {
 	}
 	tool.ReturnSuccess(ctx, 200, "发布评论成功")
 }
+
+func SelectComment(ctx *gin.Context) {
+	movieId := ctx.PostForm("movieId")
+	comment := model.Comment{
+		MovieId: movieId,
+	}
+	c, err := service.SelectComment(comment)
+	if err != nil {
+		fmt.Println("查询评论失败", err)
+		tool.ReturnFailure(ctx, 500, "短评加载失败")
+		return
+	}
+	tool.ReturnFailure(ctx, 200, c)
+}

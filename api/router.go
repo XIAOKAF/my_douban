@@ -32,6 +32,7 @@ func InitEngine() {
 	{
 		movieGroup.GET("/selectMovieDetails", selectMovieDetails) //影片详情
 		movieGroup.POST("/postShortComment", PostShortComment)    //发布短评
+		movieGroup.GET("/getComment", SelectComment)              //获取短评
 	}
 
 	engine.GET("/selectCelebrityDetails", getCelebrityDetails) //影人详情

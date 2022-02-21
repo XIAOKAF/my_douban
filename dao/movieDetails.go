@@ -121,3 +121,19 @@ func InsertComment(comment model.Comment) error {
 	}
 	return nil
 }
+
+func SelectComment(comment model.Comment) (model.Comment, error) {
+	sql := "select content from comment where id = ?"
+	rows, err := DB.Query(sql, comment.MovieId)
+	if err != nil {
+		return comment, err
+	}
+	defer rows.Close()
+	for rows.Next() {
+		err = rows.Scan(&comment.Comment)
+		if err != nil {
+			return comment, err
+		}
+	}
+	return comment, nil
+}
