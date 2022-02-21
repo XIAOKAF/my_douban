@@ -111,3 +111,13 @@ func SelectAllActorsByMovieId(movieId string) (error, [6]model.ActorsBasicInfo) 
 	}
 	return nil, arr
 }
+
+// InsertComment 插入短评
+func InsertComment(comment model.Comment) error {
+	sql := "insert into comment(id,content,postId)values(?,?,?)"
+	_, err := DB.Exec(sql, comment.MovieId, comment.Comment, comment.PostId)
+	if err != nil {
+		return err
+	}
+	return nil
+}
