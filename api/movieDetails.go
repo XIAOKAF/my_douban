@@ -26,7 +26,7 @@ func selectMovieDetails(ctx *gin.Context) {
 	}
 	//该部电影已存入flag为false
 	if flag == false {
-		//获取除评分占比,同类比较，演职人员以外的信息
+		//获取除评分占比,演职人员以外的信息
 		err, movie := service.SelectMovieDetailsByMovieId(movieID)
 		if err != nil {
 			fmt.Println("查询失败", err)
@@ -37,7 +37,7 @@ func selectMovieDetails(ctx *gin.Context) {
 		err, starArr := service.SelectStarDetailsByMovieId(movieID)
 		if err != nil {
 			fmt.Println("获取评分占比失败", err)
-			tool.ReturnFailure(ctx, 500, "电影详情失败")
+			tool.ReturnFailure(ctx, 500, "加载电影详情失败")
 			return
 		}
 		movie.StarPercentage = starArr
@@ -57,7 +57,7 @@ func selectMovieDetails(ctx *gin.Context) {
 	req, err := http.NewRequest("GET", "https://movie.douban.com/subject/"+movieID+"/?tag="+tag+"&from=gaia", nil)
 	if err != nil {
 		fmt.Println("请求失败", err)
-		tool.ReturnFailure(ctx, 500, "加载失败")
+		tool.ReturnFailure(ctx, 500, "网络爬虫请求失败")
 		return
 	}
 
@@ -78,13 +78,15 @@ func selectMovieDetails(ctx *gin.Context) {
 	resp, err := client.Do(req)
 	if err != nil {
 		fmt.Println("请求失败：", err)
+		tool.ReturnFailure(ctx, 500, "网络爬虫请求失败")
 		return
 	}
 	defer resp.Body.Close()
 
 	docDetails, err := goquery.NewDocumentFromReader(resp.Body)
 	if err != nil {
-		fmt.Println(err)
+		fmt.Println("网页解析错误", err)
+		tool.ReturnFailure(ctx, 500, "网页解析错误")
 		return
 	}
 
