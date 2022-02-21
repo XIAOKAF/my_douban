@@ -126,12 +126,3 @@ func SelectRecentWorks(celebrityId string) (error, [5]model.RecentWorks) {
 	}
 	return nil, worksArr
 }
-
-func InsertComment(comment model.Comment) error {
-	sql := "insert into comment(id,content,postId)values(?,?,?)"
-	_, err := DB.Exec(sql, comment.MovieId, comment.Comment, comment.PostId)
-	if err != nil {
-		return err
-	}
-	return nil
-}
