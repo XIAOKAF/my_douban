@@ -271,6 +271,10 @@ func PostShortComment(ctx *gin.Context) {
 	movieId := ctx.PostForm("movieId")
 	content := ctx.PostForm("comment")
 	token := ctx.GetHeader("token")
+	if token == "" {
+		tool.ReturnFailure(ctx, 200, "请先登录")
+		return
+	}
 	//token过期
 	claims, err := service.ParseToken(token)
 	flag := tool.CheckToken(ctx, err)
@@ -316,6 +320,10 @@ func PostShortComment(ctx *gin.Context) {
 
 func SelectComment(ctx *gin.Context) {
 	movieId := ctx.PostForm("movieId")
+	if movieId == "" {
+		tool.ReturnFailure(ctx, 403, "电影id不能为空")
+		return
+	}
 	comment := model.Comment{
 		MovieId: movieId,
 	}

@@ -18,7 +18,7 @@ func getCelebrityDetails(ctx *gin.Context) {
 	req, err := http.NewRequest("GET", "https://movie.douban.com/celebrity/"+celebrityId+"/", nil)
 	if err != nil {
 		fmt.Println("请求失败", err)
-		tool.ReturnFailure(ctx, 500, "服务器错误")
+		tool.ReturnFailure(ctx, 500, "网络爬虫请求失败")
 		return
 	}
 	req.Header.Set("Connection", "keep-alive")
@@ -38,6 +38,7 @@ func getCelebrityDetails(ctx *gin.Context) {
 	resp, err := client.Do(req)
 	if err != nil {
 		fmt.Println("请求失败：", err)
+		tool.ReturnFailure(ctx, 500, "网络爬虫请求失败")
 		return
 	}
 	defer resp.Body.Close()
@@ -45,13 +46,14 @@ func getCelebrityDetails(ctx *gin.Context) {
 	docDetails, err := goquery.NewDocumentFromReader(resp.Body)
 	if err != nil {
 		fmt.Println(err)
+		tool.ReturnFailure(ctx, 500, "网页解析错误")
 		return
 	}
 	//查询该演员是否录入
 	err, flag := service.SelectCelebrityById(celebrityId)
 	if err != nil {
 		fmt.Println("查询演员失败", err)
-		tool.ReturnFailure(ctx, 500, "服务器错误")
+		tool.ReturnFailure(ctx, 500, "影人详情加载失败")
 		return
 	}
 	//该演员已经录入，则直接返回信息
@@ -60,28 +62,28 @@ func getCelebrityDetails(ctx *gin.Context) {
 		err, celebrity := service.SelectCelebrityDetails(celebrityId)
 		if err != nil {
 			fmt.Println("查询演员信息错误", err)
-			tool.ReturnFailure(ctx, 500, "服务器错误")
+			tool.ReturnFailure(ctx, 500, "影人详情加载失败")
 			return
 		}
 		//获取演员照片
 		err, celebrity.Photos = service.SelectPhotos(celebrityId)
 		if err != nil {
 			fmt.Println("查询演员照片失败", err)
-			tool.ReturnFailure(ctx, 500, "服务器错误")
+			tool.ReturnFailure(ctx, 500, "影人详情加载失败")
 			return
 		}
 		//获取演员获奖情况
 		err, celebrity.Rewords = service.SelectRewards(celebrityId)
 		if err != nil {
 			fmt.Println("查询演员获奖情况错误", err)
-			tool.ReturnFailure(ctx, 500, "服务器错误")
+			tool.ReturnFailure(ctx, 500, "影人详情加载失败")
 			return
 		}
 		//获取演员最近五部作品
 		err, celebrity.Works = service.SelectRecentWorks(celebrityId)
 		if err != nil {
 			fmt.Println("查询演员最近五部作品错误", err)
-			tool.ReturnFailure(ctx, 500, "服务器错误")
+			tool.ReturnFailure(ctx, 500, "影人详情加载失败")
 			return
 		}
 		celebrity.CelebrityId = celebrityId
@@ -100,7 +102,7 @@ func getCelebrityDetails(ctx *gin.Context) {
 	celebrityDetails.Image, ok = image.Attr("src")
 	if !ok {
 		fmt.Println("演员图片解析失败", err)
-		tool.ReturnFailure(ctx, 500, "图片解析失败")
+		tool.ReturnFailure(ctx, 500, "影人详情加载失败")
 		return
 	}
 	docDetails.Find("#headline > div.info > ul").
@@ -116,15 +118,15 @@ func getCelebrityDetails(ctx *gin.Context) {
 			g, err := regexp.Compile(`[^\n\s*\r性别:(.*)\\n]`)
 			if err != nil {
 				fmt.Println("性别解析失败", err)
-				tool.ReturnFailure(ctx, 500, "服务器错误")
+				tool.ReturnFailure(ctx, 500, "影人详情加载失败")
 				return
 			}
 			celebrityDetails.Gender = string(g.Find([]byte(gender)))
 			//星座
 			c, err := regexp.Compile(`[^\n\s*\r星座:\\n](.*)`)
 			if err != nil {
-				fmt.Println("性别解析失败", err)
-				tool.ReturnFailure(ctx, 500, "服务器错误")
+				fmt.Println("星座解析失败", err)
+				tool.ReturnFailure(ctx, 500, "影人详情加载失败")
 				return
 			}
 			celebrityDetails.Constellation = string(c.Find([]byte(constellation)))
@@ -132,14 +134,14 @@ func getCelebrityDetails(ctx *gin.Context) {
 			bPlace, err := regexp.Compile(`[^\n\s*\r出生地:\\n](.*)`)
 			if err != nil {
 				fmt.Println("出生地解析失败", err)
-				tool.ReturnFailure(ctx, 500, "服务器错误")
+				tool.ReturnFailure(ctx, 500, "影人详情加载失败")
 			}
 			celebrityDetails.Birthplace = string(bPlace.Find([]byte(birthplace)))
 			//出生日期
 			bDate, err := regexp.Compile(`[^\n\s*\r出生日期:\\n](.*)`)
 			if err != nil {
 				fmt.Println("出生日期解析错误", err)
-				tool.ReturnFailure(ctx, 500, "服务器错误")
+				tool.ReturnFailure(ctx, 500, "影人详情加载失败")
 				return
 			}
 			celebrityDetails.BirthDate = string(bDate.Find([]byte(birthDate)))
@@ -147,7 +149,7 @@ func getCelebrityDetails(ctx *gin.Context) {
 			j, err := regexp.Compile(`[^\n\s*\r职业:\\n](.*)`)
 			if err != nil {
 				fmt.Println("职业解析错误", err)
-				tool.ReturnFailure(ctx, 500, "服务器错误")
+				tool.ReturnFailure(ctx, 500, "影人详情加载失败")
 				return
 			}
 			celebrityDetails.Jobs = string(j.Find([]byte(jobs)))
@@ -155,7 +157,7 @@ func getCelebrityDetails(ctx *gin.Context) {
 			n, err := regexp.Compile(`[^\n\s*\r更多中文名:\\n](.*)`)
 			if err != nil {
 				fmt.Println("更多中文名解析错误", err)
-				tool.ReturnFailure(ctx, 500, "服务器错误")
+				tool.ReturnFailure(ctx, 500, "影人详情加载失败")
 				return
 			}
 			celebrityDetails.Nickname = string(n.Find([]byte(nickname)))
@@ -163,7 +165,7 @@ func getCelebrityDetails(ctx *gin.Context) {
 			f, err := regexp.Compile(`[^\n\s*\r家庭成员:\\n](.*)`)
 			if err != nil {
 				fmt.Println("家庭成员解析错误", err)
-				tool.ReturnFailure(ctx, 500, "服务器错误")
+				tool.ReturnFailure(ctx, 500, "影人详情加载失败")
 				return
 			}
 			celebrityDetails.Family = string(f.Find([]byte(family)))
@@ -174,7 +176,7 @@ func getCelebrityDetails(ctx *gin.Context) {
 	err = service.InsertCelebrityDetails(celebrityDetails)
 	if err != nil {
 		fmt.Println("存入演员基本信息失败", err)
-		tool.ReturnFailure(ctx, 500, "服务器错误")
+		tool.ReturnFailure(ctx, 500, "影人详情加载失败")
 		return
 	}
 	//照片
@@ -184,14 +186,14 @@ func getCelebrityDetails(ctx *gin.Context) {
 		picture, ok := image.Attr("src")
 		if !ok {
 			fmt.Println("图片解析失败")
-			tool.ReturnFailure(ctx, 500, "服务器错误")
+			tool.ReturnFailure(ctx, 500, "影人详情加载失败")
 			return
 		}
 		//存储照片
 		err := service.InsertPhotos(picture, celebrityId)
 		if err != nil {
 			fmt.Println("照片存储失败", err)
-			tool.ReturnFailure(ctx, 500, "服务器错误")
+			tool.ReturnFailure(ctx, 500, "影人详情加载失败")
 			return
 		}
 	}
@@ -209,7 +211,7 @@ func getCelebrityDetails(ctx *gin.Context) {
 		err := service.InsertRewards(rewards, celebrityId)
 		if err != nil {
 			fmt.Println("储存获奖情况失败", err)
-			tool.ReturnFailure(ctx, 500, "服务器错误")
+			tool.ReturnFailure(ctx, 500, "影人详情加载失败")
 			return
 		}
 	}
@@ -223,14 +225,14 @@ func getCelebrityDetails(ctx *gin.Context) {
 				url := selection.Find("li:nth-child(" + k + ") > div.pic > a")
 				workId, ok := url.Attr("href")
 				if !ok {
-					fmt.Println("作品id解析失败")
-					tool.ReturnFailure(ctx, 500, "服务器错误")
+					fmt.Println("作品url解析失败")
+					tool.ReturnFailure(ctx, 500, "影人详情加载失败")
 					return
 				}
 				w, err := regexp.Compile(`\d+`)
 				if err != nil {
-					fmt.Println("抓取演职人员错误")
-					tool.ReturnFailure(ctx, 500, "电影详情加载失败")
+					fmt.Println("从作品url中解析作品id错误", err)
+					tool.ReturnFailure(ctx, 500, "影人详情加载失败")
 					return
 				}
 				works.WorkId = string(w.Find([]byte(workId)))
@@ -239,7 +241,7 @@ func getCelebrityDetails(ctx *gin.Context) {
 				imageTmp, ok := image.Attr("src")
 				if !ok {
 					fmt.Println("最近电影海报解析失败")
-					tool.ReturnFailure(ctx, 500, "服务器错误")
+					tool.ReturnFailure(ctx, 500, "影人详情加载失败")
 					return
 				}
 				works.WorkImage = imageTmp
@@ -254,7 +256,7 @@ func getCelebrityDetails(ctx *gin.Context) {
 				err = service.InsertRecentWorks(works, celebrityId)
 				if err != nil {
 					fmt.Println("储存最近五部电影失败", err)
-					tool.ReturnFailure(ctx, 500, "服务器错误")
+					tool.ReturnFailure(ctx, 500, "影人详情加载失败")
 					return
 				}
 			}
@@ -263,14 +265,14 @@ func getCelebrityDetails(ctx *gin.Context) {
 	err, celebrity := service.SelectCelebrityDetails(celebrityId)
 	if err != nil {
 		fmt.Println("查询演员信息错误", err)
-		tool.ReturnFailure(ctx, 500, "服务器错误")
+		tool.ReturnFailure(ctx, 500, "影人详情加载失败")
 		return
 	}
 	//获取演员照片
 	err, celebrity.Photos = service.SelectPhotos(celebrityId)
 	if err != nil {
 		fmt.Println("查询演员照片失败", err)
-		tool.ReturnFailure(ctx, 500, "服务器错误")
+		tool.ReturnFailure(ctx, 500, "影人详情加载失败")
 		return
 	}
 	//获取演员获奖情况
@@ -288,5 +290,5 @@ func getCelebrityDetails(ctx *gin.Context) {
 		return
 	}
 	celebrity.CelebrityId = celebrityId
-	tool.ReturnSuccess(ctx, 500, celebrity)
+	tool.ReturnSuccess(ctx, 200, celebrity)
 }
