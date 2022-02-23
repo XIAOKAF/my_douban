@@ -47,25 +47,25 @@ func registerOrLoginByVerifyCode(ctx *gin.Context) {
 	}
 	latestTime := sendTime.Add(mm)
 	if latestTime.Before(postTime) {
-		tool.ReturnFailure(ctx, 408, "验证码已过期")
+		tool.ReturnFailure(ctx, 200, "验证码已过期")
 		return
 	}
 	if verifyCode != code {
-		tool.ReturnFailure(ctx, 410, "验证码错误")
+		tool.ReturnFailure(ctx, 200, "验证码错误")
 		return
 	}
 	//生成token,有效时间2分钟
 	token, err := service.CreatToken(mobile, "token", 30)
 	if err != nil {
 		fmt.Println("token生成失败", err)
-		tool.ReturnFailure(ctx, 500, "系统错误")
+		tool.ReturnFailure(ctx, 500, "服务器错误")
 		return
 	}
 	//生成refreshToken，有效时间24小时
 	refreshToken, err := service.CreatToken(mobile, "refreshToken", 1440)
 	if err != nil {
 		fmt.Println("refreshToken生成失败", err)
-		tool.ReturnFailure(ctx, 500, "系统错误")
+		tool.ReturnFailure(ctx, 500, "服务器错误")
 		return
 	}
 
@@ -121,7 +121,7 @@ func improvePersonalInfo(ctx *gin.Context) {
 	pwd, err := regexp.Compile(`[A-Za-z][0-9]`)
 	if err != nil {
 		fmt.Println("密码解析错误", err)
-		tool.ReturnFailure(ctx, 200, "密码设置错误")
+		tool.ReturnFailure(ctx, 500, "密码设置错误")
 		return
 	}
 	p := string(pwd.Find([]byte(password)))

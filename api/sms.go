@@ -11,14 +11,14 @@ import (
 func sendSms(ctx *gin.Context) {
 	mobile := ctx.PostForm("mobile")
 	if len(mobile) != 11 {
-		tool.ReturnFailure(ctx, 412, "电话号码格式错误")
+		tool.ReturnFailure(ctx, 412, "发送验证码失败")
 		return
 	}
 	//判断该电话号码是否已经被注册过
 	flag, err := service.IsRegister(mobile)
 	if err != nil {
 		fmt.Println("查询电话号码出现错误", err)
-		tool.ReturnFailure(ctx, 500, "服务器错误")
+		tool.ReturnFailure(ctx, 500, "发送验证码失败")
 		return
 	}
 	//flag为false表示未注册
@@ -26,7 +26,7 @@ func sendSms(ctx *gin.Context) {
 		err = service.Register(mobile)
 		if err != nil {
 			fmt.Println("注册失败", err)
-			tool.ReturnFailure(ctx, 500, "服务器错误")
+			tool.ReturnFailure(ctx, 500, "发送验证码失败")
 			return
 		}
 	}
