@@ -1,7 +1,9 @@
 package service
 
 import (
+	"database/sql"
 	"errors"
+	"gin/dao"
 	"gin/model"
 	"github.com/dgrijalva/jwt-go"
 	"time"
@@ -12,8 +14,9 @@ var jwtKey = []byte("www.zxc.com")
 func CreatToken(mobile string, variety string, duration time.Duration) (string, error) {
 	expireTime := time.Now().Add(duration * time.Minute)
 	claims := model.TokenClaims{
-		Mobile:  mobile,
-		Variety: variety,
+		Mobile:     mobile,
+		Variety:    variety,
+		ExpireTime: expireTime,
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: expireTime.Unix(), //过期时间
 			IssuedAt:  time.Now().Unix(), //颁发时间
@@ -44,4 +47,16 @@ func ParseToken(tokenString string) (*model.TokenClaims, error) {
 		return nil, err
 	}
 	return claims, nil
+}
+
+func CheckRefreshToken(mobile string) (error, bool) {
+	err := dao.CheckRefreshToken(mobile)
+	if err != nil {
+		//找到该refreshToken的信息，返回true
+		if err == sql.ErrNoRows {
+			return nil, false
+		}
+		return err, false
+	}
+	return nil, true
 }
