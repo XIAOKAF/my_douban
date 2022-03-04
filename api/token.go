@@ -12,7 +12,7 @@ func getRefreshToken(ctx *gin.Context) {
 	claims, err := service.ParseToken(refreshToken)
 	//token类型错误
 	if claims.Variety == "token" {
-		tool.ReturnFailure(ctx, 500, "refreshToken错误")
+		tool.ReturnFailure(ctx, 500, "refreshToken种类错误")
 		return
 	}
 	if err != nil {
