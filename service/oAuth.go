@@ -1,8 +1,10 @@
 package service
 
 import (
+	"database/sql"
 	"encoding/json"
 	"fmt"
+	"gin/dao"
 	"gin/model"
 	"net/http"
 )
@@ -56,12 +58,21 @@ func GetUserInfo(token *model.Token, user model.User) (model.User, error) {
 	return user, nil
 }
 
-func CheckRegisterByUsername(user model.User) error {
-
-	return nil
+func CheckRegisterByUsername(user model.User) (error, bool) {
+	err := dao.CheckRegisterByUserName(user)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, false //未查询到该用户
+		}
+		return err, true
+	}
+	return nil, true
 }
 
 func RegisterByOAuth(user model.User) error {
-
+	err := dao.RegisterByOAuth(user)
+	if err != nil {
+		return err
+	}
 	return nil
 }
