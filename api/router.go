@@ -13,6 +13,7 @@ func InitEngine() {
 	{
 		userGroup.POST("/registerOrLoginByVerifyCode", registerOrLoginByVerifyCode) //验证码注册或登录
 		userGroup.POST("/loginByPassword", loginByPassword)                         //密码登录
+		userGroup.POST("/oAuthLogin", oAuth)                                        //GitHub授权登录
 		userGroup.POST("/improvePersonalInfo", improvePersonalInfo)                 //完善个人信息
 		userGroup.GET("/getPersonalInfo", getPersonalInfo)                          //查看个人信息
 		userGroup.POST("/changePasswordByVerifyCode", changePasswordByVerifyCode)   //修改密码
