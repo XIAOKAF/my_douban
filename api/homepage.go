@@ -55,7 +55,7 @@ func hotShowing(ctx *gin.Context) {
 		return
 	}
 
-	err = service.TruncateInfo("hotShowing")
+	err = service.TruncateInfo("hotshowing")
 	if err != nil {
 		fmt.Println("删除最近热映电影失败", err)
 		tool.ReturnFailure(ctx, 500, "正在热映加载失败")
@@ -159,7 +159,7 @@ func recentHotMovie(ctx *gin.Context) {
 	//将data中的subjects部分转化为[]interface{}类型
 	movieInfo := data["subjects"].([]interface{})
 	//删除原来的数据
-	err = service.TruncateInfo("recentHotMovie")
+	err = service.TruncateInfo("recenthotmovie")
 	if err != nil {
 		fmt.Println("删除最近热门电影失败", err)
 		tool.ReturnFailure(ctx, 500, "最近热门电影加载失败")
@@ -221,7 +221,7 @@ func recentHotTeleplay(ctx *gin.Context) {
 	}
 	defer resp.Body.Close()
 	//删除原有数据
-	err = service.TruncateInfo("recentHotTeleplay")
+	err = service.TruncateInfo("recenthotteleplay")
 	if err != nil {
 		fmt.Println("删除最近热门电视剧失败")
 		tool.ReturnFailure(ctx, 500, "最近热门电视剧加载失败")
@@ -311,7 +311,7 @@ func weeklyPraise(ctx *gin.Context) {
 		return
 	}
 
-	err = service.TruncateInfo("weeklyPraise")
+	err = service.TruncateInfo("weeklypraise")
 	if err != nil {
 		fmt.Println("删除一周热榜数据失败", err)
 		tool.ReturnFailure(ctx, 500, "一周热榜加载失败")
@@ -376,7 +376,7 @@ func hotRecommendation(ctx *gin.Context) {
 		return
 	}
 
-	err = service.TruncateInfo("hotRecommendation")
+	err = service.TruncateInfo("hotrecommendation")
 	if err != nil {
 		fmt.Println("热门推荐数据删除失败", err)
 		tool.ReturnFailure(ctx, 500, "热门推荐加载失败")
