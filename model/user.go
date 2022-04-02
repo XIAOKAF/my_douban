@@ -1,8 +1,12 @@
 package model
 
-import "time"
+import (
+	"gorm.io/gorm"
+	"time"
+)
 
 type User struct {
+	gorm.Model
 	UserId           int
 	Username         string
 	Mobile           string

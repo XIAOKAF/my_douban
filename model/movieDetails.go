@@ -1,6 +1,9 @@
 package model
 
+import "gorm.io/gorm"
+
 type MovieDetails struct {
+	gorm.Model
 	MovieId        string
 	MovieName      string
 	ReleaseYear    string

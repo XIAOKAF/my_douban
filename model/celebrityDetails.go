@@ -1,6 +1,9 @@
 package model
 
+import "gorm.io/gorm"
+
 type Celebrity struct {
+	gorm.Model
 	CelebrityId   string
 	CelebrityName string
 	Image         string

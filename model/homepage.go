@@ -1,6 +1,9 @@
 package model
 
+import "gorm.io/gorm"
+
 type HotShowing struct {
+	gorm.Model
 	Rank        int
 	MovieName   string
 	RatingValue string
@@ -8,6 +11,7 @@ type HotShowing struct {
 }
 
 type RecentHot struct {
+	gorm.Model
 	Rank             int
 	RecentHotMovieId string
 	MovieName        string
@@ -16,6 +20,7 @@ type RecentHot struct {
 }
 
 type RecentHotTeleplay struct {
+	gorm.Model
 	Rank                int
 	RecentHotTeleplayId string
 	TeleplayName        string
@@ -25,11 +30,13 @@ type RecentHotTeleplay struct {
 }
 
 type WeeklyPraise struct {
+	gorm.Model
 	Rank                  int
 	WeeklyPraiseMovieName string
 }
 
 type HotRecommendation struct {
+	gorm.Model
 	Rank    int
 	Title   string
 	Content string
