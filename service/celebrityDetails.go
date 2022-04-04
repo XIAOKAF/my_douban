@@ -49,12 +49,12 @@ func InsertRecentWorks(works model.RecentWorks, celebrityId string) error {
 	return nil
 }
 
-func SelectCelebrityDetails(celebrity model.Celebrity) (error, model.Celebrity) {
-	err, cele := dao.SelectCelebrityDetails(celebrity)
+func SelectCelebrityDetails(celebrity model.Celebrity) error {
+	err := dao.SelectCelebrityDetails(celebrity)
 	if err != nil {
-		return err, cele
+		return err
 	}
-	return nil, cele
+	return nil
 }
 
 func SelectPhotos(celebrityId string) (error, [5]string) {

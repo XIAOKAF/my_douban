@@ -62,7 +62,7 @@ func getCelebrityDetails(ctx *gin.Context) {
 	//该演员已经录入，则直接返回信息
 	if flag {
 		//获取演员信息
-		err, celebrity := service.SelectCelebrityDetails(celebrity)
+		err := service.SelectCelebrityDetails(celebrity)
 		if err != nil {
 			fmt.Println("查询演员信息错误", err)
 			tool.ReturnFailure(ctx, 500, "影人详情加载失败")

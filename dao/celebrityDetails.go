@@ -48,8 +48,12 @@ func InsertRecentWorks(works model.RecentWorks, celebrityId string) error {
 	return nil
 }
 
-func SelectCelebrityDetails(celebrity model.Celebrity) {
-	DB.First(&celebrity, "celebrityId = ?", celebrity.CelebrityId)
+func SelectCelebrityDetails(celebrity model.Celebrity) error {
+	result := DB.First(&celebrity, "celebrityId = ?", celebrity.CelebrityId)
+	if result.Error != nil {
+		return result.Error
+	}
+	return nil
 }
 
 func SelectPhotos(celebrityId string) (error, [5]string) {
