@@ -2,6 +2,7 @@ package dao
 
 import (
 	"gin/model"
+	"go/ast"
 )
 
 func SelectCelebrityById(celebrity model.Celebrity) error {
@@ -56,23 +57,17 @@ func SelectCelebrityDetails(celebrity model.Celebrity) error {
 	return nil
 }
 
-func SelectPhotos(celebrityId string) (error, [5]string) {
-	var photoArr [5]string
-	var i int
-	sql := "select image from photos where masterId = ?"
-	rows, err := DB.Query(sql, celebrityId)
-	if err != nil {
-		return err, photoArr
+func SelectPhotos(photograph model.Photograph) (error, [5]string) {
+	var photo [5]string
+	result := DB.Find(&photograph, "masterId = ?", photograph.MasterId)
+	if result.Error != nil {
+		return result.Error, photo
 	}
-	defer rows.Close()
-	for rows.Next() {
-		err = rows.Scan(&photoArr[i])
-		if err != nil {
-			return err, photoArr
-		}
-		i++
+	rows := result.Scan(&photo)
+	if rows.Error != nil {
+		return rows.Error, photo
 	}
-	return nil, photoArr
+	return nil, photo
 }
 
 func SelectRewards(celebrity string) (error, [3]string) {

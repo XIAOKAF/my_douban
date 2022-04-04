@@ -69,7 +69,10 @@ func getCelebrityDetails(ctx *gin.Context) {
 			return
 		}
 		//获取演员照片
-		err, celebrity.Photos = service.SelectPhotos(celebrityId)
+		photograph := model.Photograph{
+			MasterId: celebrityId,
+		}
+		err, celebrity.Photos = service.SelectPhotos(photograph)
 		if err != nil {
 			fmt.Println("查询演员照片失败", err)
 			tool.ReturnFailure(ctx, 500, "影人详情加载失败")

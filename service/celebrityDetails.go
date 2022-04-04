@@ -57,8 +57,8 @@ func SelectCelebrityDetails(celebrity model.Celebrity) error {
 	return nil
 }
 
-func SelectPhotos(celebrityId string) (error, [5]string) {
-	err, photoArr := dao.SelectPhotos(celebrityId)
+func SelectPhotos(photograph model.Photograph) (error, [5]string) {
+	err, photoArr := dao.SelectPhotos(photograph)
 	if err != nil {
 		return err, photoArr
 	}

@@ -26,3 +26,9 @@ type RecentWorks struct {
 	WorkName   string
 	WorkScores string
 }
+
+type Photograph struct {
+	Photos   string
+	MasterId string
+	image    string
+}
