@@ -14,6 +14,9 @@ import (
 
 func getCelebrityDetails(ctx *gin.Context) {
 	celebrityId := ctx.PostForm("celebrityId")
+	celebrity := model.Celebrity{
+		CelebrityId: celebrityId,
+	}
 	client := http.Client{}
 	req, err := http.NewRequest("GET", "https://movie.douban.com/celebrity/"+celebrityId+"/", nil)
 	if err != nil {
@@ -50,7 +53,7 @@ func getCelebrityDetails(ctx *gin.Context) {
 		return
 	}
 	//查询该演员是否录入
-	err, flag := service.SelectCelebrityById(celebrityId)
+	err, flag := service.SelectCelebrityById(celebrity)
 	if err != nil {
 		fmt.Println("查询演员失败", err)
 		tool.ReturnFailure(ctx, 500, "影人详情加载失败")
@@ -59,7 +62,7 @@ func getCelebrityDetails(ctx *gin.Context) {
 	//该演员已经录入，则直接返回信息
 	if flag {
 		//获取演员信息
-		err, celebrity := service.SelectCelebrityDetails(celebrityId)
+		err, celebrity := service.SelectCelebrityDetails(celebrity)
 		if err != nil {
 			fmt.Println("查询演员信息错误", err)
 			tool.ReturnFailure(ctx, 500, "影人详情加载失败")

@@ -1,16 +1,16 @@
 package service
 
 import (
-	"database/sql"
 	"gin/dao"
 	"gin/model"
+	"gorm.io/gorm"
 )
 
-func SelectCelebrityById(celebrity string) (error, bool) {
+func SelectCelebrityById(celebrity model.Celebrity) (error, bool) {
 	err := dao.SelectCelebrityById(celebrity)
 	if err != nil {
-		if err == sql.ErrNoRows {
-			return nil, false
+		if err == gorm.ErrRecordNotFound {
+			return nil, false //未查询到返回false，反之返回true
 		}
 		return err, true
 	}
@@ -49,12 +49,12 @@ func InsertRecentWorks(works model.RecentWorks, celebrityId string) error {
 	return nil
 }
 
-func SelectCelebrityDetails(celebrityId string) (error, model.Celebrity) {
-	err, celebrity := dao.SelectCelebrityDetails(celebrityId)
+func SelectCelebrityDetails(celebrity model.Celebrity) (error, model.Celebrity) {
+	err, cele := dao.SelectCelebrityDetails(celebrity)
 	if err != nil {
-		return err, celebrity
+		return err, cele
 	}
-	return nil, celebrity
+	return nil, cele
 }
 
 func SelectPhotos(celebrityId string) (error, [5]string) {

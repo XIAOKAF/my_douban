@@ -1,16 +1,13 @@
 package dao
 
-import "gin/model"
+import (
+	"gin/model"
+)
 
-func SelectCelebrityById(celebrityId string) error {
-	var id string
-	rows := DB.QueryRow("SELECT celebrity FROM celebrity WHERE celebrityId = ? ", celebrityId)
-	if rows.Err() != nil {
-		return rows.Err()
-	}
-	err := rows.Scan(&id)
-	if err != nil {
-		return err
+func SelectCelebrityById(celebrity model.Celebrity) error {
+	result := DB.Find(&celebrity, celebrity.CelebrityId)
+	if result.Error != nil {
+		return result.Error
 	}
 	return nil
 }
@@ -51,21 +48,8 @@ func InsertRecentWorks(works model.RecentWorks, celebrityId string) error {
 	return nil
 }
 
-func SelectCelebrityDetails(celebrityId string) (error, model.Celebrity) {
-	var celebrity model.Celebrity
-	sql := "select celebrityName,image,gender,constellation,birthDate,birthplace,jobs,nickname,family,introduction from celebrity where celebrityId = ?"
-	rows, err := DB.Query(sql, celebrityId)
-	if err != nil {
-		return err, celebrity
-	}
-	defer rows.Close()
-	for rows.Next() {
-		err = rows.Scan(&celebrity.CelebrityName, &celebrity.Image, &celebrity.Gender, &celebrity.Constellation, &celebrity.BirthDate, &celebrity.Birthplace, &celebrity.Jobs, &celebrity.Nickname, &celebrity.Family, &celebrity.Introduction)
-		if err != nil {
-			return err, celebrity
-		}
-	}
-	return nil, celebrity
+func SelectCelebrityDetails(celebrity model.Celebrity) {
+	DB.First(&celebrity, "celebrityId = ?", celebrity.CelebrityId)
 }
 
 func SelectPhotos(celebrityId string) (error, [5]string) {
